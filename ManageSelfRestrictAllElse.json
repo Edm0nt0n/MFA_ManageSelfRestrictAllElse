@@ -1,0 +1,82 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowAllUsersToListAccounts",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListAccountAliases",
+                "iam:ListUsers",
+                "iam:GetAccountSummary"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AllowIndividualUserToSeeAndManageTheirOwnInformation",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ChangePassword",
+                "iam:GetAccountPasswordPolicy",
+                "iam:GetLoginProfile",
+                "iam:UpdateLoginProfile",
+                "iam:ListMFADevices"
+            ],
+            "Resource": "arn:aws:iam::AWS_ACCOUNT:user/${aws:username}"
+        },
+        {
+            "Sid": "AllowIndividualUserToListTheirOwnMFA",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListVirtualMFADevices"
+            ],
+            "Resource": [
+                "arn:aws:iam::AWS_ACCOUNT:mfa/*"
+            ]
+        },
+        {
+            "Sid": "AllowIndividualUserToManageTheirOwnMFA",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateVirtualMFADevice",
+                "iam:DeactivateMFADevice",
+                "iam:DeleteVirtualMFADevice",
+                "iam:RequestSmsMfaRegistration",
+                "iam:FinalizeSmsMfaRegistration",
+                "iam:EnableMFADevice",
+                "iam:ResyncMFADevice"
+            ],
+            "Resource": [
+                "arn:aws:iam::AWS_ACCOUNT:mfa/${aws:username}",
+                "arn:aws:iam::AWS_ACCOUNT:user/${aws:username}"
+            ]
+        },
+        {
+            "Sid": "BlockAnyAccessOtherThanAboveUnlessSignedInWithMFA",
+            "Effect": "Deny",
+            "NotAction": [
+                "iam:ListAccountAliases",
+                "iam:ListUsers",
+                "iam:GetAccountSummary",
+                "iam:ChangePassword",
+                "iam:GetAccountPasswordPolicy",
+                "iam:GetLoginProfile",
+                "iam:UpdateLoginProfile",
+                "iam:CreateVirtualMFADevice",
+                "iam:DeactivateMFADevice",
+                "iam:DeleteVirtualMFADevice",
+                "iam:RequestSmsMfaRegistration",
+                "iam:FinalizeSmsMfaRegistration",
+                "iam:EnableMFADevice",
+                "iam:ResyncMFADevice",
+                "iam:ListVirtualMFADevices",
+                "iam:ListMFADevices"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "Bool": {
+                    "aws:MultiFactorAuthPresent": "false"
+                }
+            }
+        }
+    ]
+}
